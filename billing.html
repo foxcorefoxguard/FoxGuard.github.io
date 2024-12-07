@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FoxGuard - Billing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="app" class="container mx-auto px-4">
+        <header class="flex justify-between items-center py-6">
+            <h1 class="text-2xl font-bold">FoxGuard</h1>
+            <div class="relative inline-block text-left">
+                <button id="user-menu-button">My Account</button>
+                <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 divide-y divide-gray-700 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                    <div class="py-1" role="none">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white" role="menuitem">Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white" role="menuitem">Settings</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white" role="menuitem">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="mt-8">
+            <section class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-center">Billing & Subscription</h2>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-4">Current Plan</h3>
+                        <div class="bg-gray-700 p-4 rounded">
+                            <h4 class="text-xl font-semibold">Pro Plan</h4>
+                            <p class="text-gray-300 mb-4">$19.99/month</p>
+                            <ul class="space-y-2 mb-4">
+                                <li>✅ Advanced Anti-Cheat</li>
+                                <li>✅ Detailed Logging</li>
+                                <li>✅ Priority Support</li>
+                            </ul>
+                            <button id="manage-subscription-btn" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">
+                                Manage Subscription
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="payment-methods-section" class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-4">Payment Methods</h3>
+                        <div id="payment-methods-list" class="space-y-4">
+                            <div id="visa-card" class="bg-gray-700 p-4 rounded flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-8 h-8 mr-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5zm0 12L2 9l10 5 10-5v7l-10 5L2 16v-7z"/>
+                                    </svg>
+                                    <span>Visa ****1234</span>
+                                </div>
+                                <button id="change-visa-btn" class="text-sm text-blue-400 hover:text-blue-300">
+                                    Change
+                                </button>
+                            </div>
+                            <div id="paypal-method" class="bg-gray-700 p-4 rounded flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-8 h-8 mr-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14c-.21-.64-.26-1.31-.26-2s.05-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.21.64.26 1.31.26 2s-.05 1.36-.26 2h-3.38z"/>
+                                    </svg>
+                                    <span>PayPal</span>
+                                </div>
+                                <button id="unlink-paypal-btn" class="text-sm text-blue-400 hover:text-blue-300">
+                                    Unlink
+                                </button>
+                            </div>
+                            <button id="add-payment-method-btn" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">
+                                Add Payment Method
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-2xl font-bold mb-4">Billing History</h3>
+                    <table class="w-full text-left">
+                        <thead class="border-b border-gray-700">
+                            <tr>
+                                <th class="pb-2">Date</th>
+                                <th class="pb-2">Plan</th>
+                                <th class="pb-2">Amount</th>
+                                <th class="pb-2">Status</th>
+                                <th class="pb-2">Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-2">Nov 15, 2024</td>
+                                <td class="py-2">Pro Plan</td>
+                                <td class="py-2">$19.99</td>
+                                <td class="py-2 text-green-500">Paid</td>
+                                <td class="py-2">
+                                    <button class="text-blue-400 hover:text-blue-300">
+                                        Download
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">Oct 15, 2024</td>
+                                <td class="py-2">Pro Plan</td>
+                                <td class="py-2">$19.99</td>
+                                <td class="py-2 text-green-500">Paid</td>
+                                <td class="py-2">
+                                    <button class="text-blue-400 hover:text-blue-300">
+                                        Download
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div id="subscription-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" role="dialog" aria-labelledby="subscription-modal-title">
+                <div class="bg-gray-800 rounded-lg p-6 w-96 max-w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="subscription-modal-title" class="text-2xl font-bold">Manage Subscription</h2>
+                        <button class="close-modal">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 p-4 rounded">
+                            <h3 class="text-xl font-semibold mb-2">Current Plan</h3>
+                            <p>Pro Plan - $19.99/month</p>
+                        </div>
+
+                        <div class="bg-gray-700 p-4 rounded">
+                            <h3 class="text-xl font-semibold mb-2">Change Plan</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="plan" value="basic" class="mr-2">
+                                    Basic Plan - $9.99/month
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="plan" value="pro" checked class="mr-2">
+                                    Pro Plan - $19.99/month
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-700 p-4 rounded">
+                            <h3 class="text-xl font-semibold mb-2">Subscription Status</h3>
+                            <div class="flex items-center justify-between">
+                                <span>Active</span>
+                                <button class="text-red-400 hover:text-red-300">
+                                    Cancel Subscription
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Card Modal -->
+            <div id="change-card-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+                <div class="bg-gray-800 rounded-lg p-6 w-96 max-w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold">Change Payment Method</h2>
+                        <button id="close-change-card-modal" class="text-gray-400 hover:text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block mb-2">Card Number</label>
+                            <input type="text" class="w-full bg-gray-700 p-2 rounded" placeholder="**** **** **** ****">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block mb-2">Expiry Date</label>
+                                <input type="text" class="w-full bg-gray-700 p-2 rounded" placeholder="MM/YY">
+                            </div>
+                            <div>
+                                <label class="block mb-2">CVV</label>
+                                <input type="text" class="w-full bg-gray-700 p-2 rounded" placeholder="***">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">
+                            Update Card
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Unlink PayPal Modal -->
+            <div id="unlink-paypal-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+                <div class="bg-gray-800 rounded-lg p-6 w-96 max-w-full text-center">
+                    <h2 class="text-2xl font-bold mb-4">Unlink PayPal</h2>
+                    <p class="mb-6">Are you sure you want to unlink your PayPal account?</p>
+                    <div class="flex justify-center space-x-4">
+                        <button id="confirm-unlink-paypal" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded">
+                            Unlink
+                        </button>
+                        <button id="cancel-unlink-paypal" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Payment Method Modal -->
+            <div id="add-payment-method-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+                <div class="bg-gray-800 rounded-lg p-6 w-96 max-w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold">Add Payment Method</h2>
+                        <button id="close-add-payment-modal" class="text-gray-400 hover:text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-center space-x-4">
+                            <button id="add-credit-card-btn" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zm0 12L2 9l10 5 10-5v7l-10 5L2 16v-7z"/>
+                                </svg>
+                                Credit Card
+                            </button>
+                            <button id="add-paypal-btn" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded flex items-center">
+                                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14c-.21-.64-.26-1.31-.26-2s.05-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.21.64.26 1.31.26 2s-.05 1.36-.26 2h-3.38z"/>
+                                </svg>
+                                PayPal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Modal and Menu Toggles
+        const manageSubscriptionBtn = document.getElementById('manage-subscription-btn');
+        const subscriptionModal = document.getElementById('subscription-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+
+        // Payment Method Buttons
+        const changeVisaBtn = document.getElementById('change-visa-btn');
+        const changeCardModal = document.getElementById('change-card-modal');
+        const closeChangeCardModal = document.getElementById('close-change-card-modal');
+
+        const unlinkPaypalBtn = document.getElementById('unlink-paypal-btn');
+        const unlinkPaypalModal = document.getElementById('unlink-paypal-modal');
+        const confirmUnlinkPaypal = document.getElementById('confirm-unlink-paypal');
+        const cancelUnlinkPaypal = document.getElementById('cancel-unlink-paypal');
+
+        const addPaymentMethodBtn = document.getElementById('add-payment-method-btn');
+        const addPaymentMethodModal = document.getElementById('add-payment-method-modal');
+        const closeAddPaymentModal = document.getElementById('close-add-payment-modal');
+
+        const addCreditCardBtn = document.getElementById('add-credit-card-btn');
+        const addPaypalBtn = document.getElementById('add-paypal-btn');
+
+        // Subscription Modal Interactions
+        manageSubscriptionBtn.addEventListener('click', () => {
+            subscriptionModal.classList.remove('hidden');
+            subscriptionModal.classList.add('flex');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            subscriptionModal.classList.add('hidden');
+            subscriptionModal.classList.remove('flex');
+        });
+
+        // User Menu Toggle
+        userMenuButton.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Change Card Modal Interactions
+        changeVisaBtn.addEventListener('click', () => {
+            changeCardModal.classList.remove('hidden');
+            changeCardModal.classList.add('flex');
+        });
+
+        closeChangeCardModal.addEventListener('click', () => {
+            changeCardModal.classList.add('hidden');
+            changeCardModal.classList.remove('flex');
+        });
+
+        // Unlink PayPal Modal Interactions
+        unlinkPaypalBtn.addEventListener('click', () => {
+            unlinkPaypalModal.classList.remove('hidden');
+            unlinkPaypalModal.classList.add('flex');
+        });
+
+        cancelUnlinkPaypal.addEventListener('click', () => {
+            unlinkPaypalModal.classList.add('hidden');
+            unlinkPaypalModal.classList.remove('flex');
+        });
+
+        confirmUnlinkPaypal.addEventListener('click', () => {
+            const paypalMethod = document.getElementById('paypal-method');
+            paypalMethod.remove();
+            unlinkPaypalModal.classList.add('hidden');
+            unlinkPaypalModal.classList.remove('flex');
+        });
+
+        // Add Payment Method Modal Interactions
+        addPaymentMethodBtn.addEventListener('click', () => {
+            addPaymentMethodModal.classList.remove('hidden');
+            addPaymentMethodModal.classList.add('flex');
+        });
+
+        closeAddPaymentModal.addEventListener('click', () => {
+            addPaymentMethodModal.classList.add('hidden');
+            addPaymentMethodModal.classList.remove('flex');
+        });
+
+        // Add Credit Card or PayPal
+        addCreditCardBtn.addEventListener('click', () => {
+            // In a real application, this would open a form to add a credit card
+            alert('Credit Card addition functionality would be implemented here.');
+        });
+
+        addPaypalBtn.addEventListener('click', () => {
+            // In a real application, this would initiate PayPal OAuth
+            alert('PayPal connection functionality would be implemented here.');
+        });
+    </script>
+</body>
+</html>

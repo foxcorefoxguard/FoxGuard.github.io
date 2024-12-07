@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxGuard - Anti-Cheat Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="app" class="container mx-auto px-4">
+        <!-- Navigation -->
+        <nav class="flex justify-between items-center py-4">
+            <div class="text-2xl font-bold">FoxGuard</div>
+            <div>
+                <button @click="showLogin = true" class="mr-4 hover:text-gray-300">Login</button>
+                <button @click="showSignup = true" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Sign Up</button>
+            </div>
+        </nav>
+
+        <!-- Login Modal -->
+        <div v-if="showLogin" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-gray-800 p-8 rounded-lg w-96">
+                <h2 class="text-2xl mb-6">Login to FoxGuard</h2>
+                <form @submit.prevent="login">
+                    <input 
+                        v-model="loginEmail" 
+                        type="email" 
+                        placeholder="Email" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <input 
+                        v-model="loginPassword" 
+                        type="password" 
+                        placeholder="Password" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-600 py-2 rounded hover:bg-blue-700"
+                    >
+                        Login
+                    </button>
+                </form>
+                <button 
+                    @click="showLogin = false" 
+                    class="mt-4 text-gray-400 hover:text-white"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+
+        <!-- Signup Modal -->
+        <div v-if="showSignup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-gray-800 p-8 rounded-lg w-96">
+                <h2 class="text-2xl mb-6">Sign Up for FoxGuard</h2>
+                <form @submit.prevent="signup">
+                    <input 
+                        v-model="signupUsername" 
+                        type="text" 
+                        placeholder="Username" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <input 
+                        v-model="signupEmail" 
+                        type="email" 
+                        placeholder="Email" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <input 
+                        v-model="signupPassword" 
+                        type="password" 
+                        placeholder="Password" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <input 
+                        v-model="signupConfirmPassword" 
+                        type="password" 
+                        placeholder="Confirm Password" 
+                        class="w-full mb-4 p-2 bg-gray-700 rounded"
+                        required
+                    >
+                    <button 
+                        type="submit" 
+                        class="w-full bg-green-600 py-2 rounded hover:bg-green-700"
+                    >
+                        Create Account
+                    </button>
+                </form>
+                <button 
+                    @click="showSignup = false" 
+                    class="mt-4 text-gray-400 hover:text-white"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+
+        <!-- Subscription Modal -->
+        <div v-if="showSubscription" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-gray-800 p-8 rounded-lg w-96">
+                <h2 class="text-2xl mb-6">Choose Your Plan</h2>
+                <div class="space-y-4">
+                    <div class="bg-gray-700 p-4 rounded">
+                        <h3 class="text-xl font-bold">Basic Plan</h3>
+                        <p class="text-gray-400">$9.99/month</p>
+                        <ul class="list-disc list-inside mt-2">
+                            <li>Basic Anti-Cheat Protection</li>
+                            <li>Standard Logging</li>
+                        </ul>
+                        <button 
+                            @click="selectPlan('basic')" 
+                            class="mt-4 w-full bg-blue-600 py-2 rounded hover:bg-blue-700"
+                        >
+                            Select Basic
+                        </button>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded">
+                        <h3 class="text-xl font-bold">Pro Plan</h3>
+                        <p class="text-gray-400">$19.99/month</p>
+                        <ul class="list-disc list-inside mt-2">
+                            <li>Advanced Anti-Cheat</li>
+                            <li>Detailed Logging</li>
+                            <li>Priority Support</li>
+                        </ul>
+                        <button 
+                            @click="selectPlan('pro')" 
+                            class="mt-4 w-full bg-green-600 py-2 rounded hover:bg-green-700"
+                        >
+                            Select Pro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    showLogin: false,
+                    showSignup: false,
+                    showSubscription: false,
+                    loginEmail: '',
+                    loginPassword: '',
+                    signupUsername: '',
+                    signupEmail: '',
+                    signupPassword: '',
+                    signupConfirmPassword: ''
+                }
+            },
+            methods: {
+                login() {
+                    if (!this.loginEmail || !this.loginPassword) {
+                        alert('Please fill in all fields');
+                        return;
+                    }
+                    
+                    axios.post('/api/login', {
+                        email: this.loginEmail,
+                        password: this.loginPassword
+                    })
+                    .then(response => {
+                        // Handle successful login
+                        this.showLogin = false;
+                        // Redirect or show dashboard
+                    })
+                    .catch(error => {
+                        alert('Login failed: ' + error.response.data.message);
+                    });
+                },
+                signup() {
+                    if (this.signupPassword !== this.signupConfirmPassword) {
+                        alert('Passwords do not match');
+                        return;
+                    }
+
+                    axios.post('/api/signup', {
+                        username: this.signupUsername,
+                        email: this.signupEmail,
+                        password: this.signupPassword
+                    })
+                    .then(response => {
+                        this.showSignup = false;
+                        this.showSubscription = true;
+                    })
+                    .catch(error => {
+                        alert('Signup failed: ' + error.response.data.message);
+                    });
+                },
+                selectPlan(plan) {
+                    axios.post('/api/subscribe', { plan })
+                    .then(response => {
+                        // Handle successful subscription
+                        alert(`Subscribed to ${plan} plan`);
+                        this.showSubscription = false;
+                    })
+                    .catch(error => {
+                        alert('Subscription failed: ' + error.response.data.message);
+                    });
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

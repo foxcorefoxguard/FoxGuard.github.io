@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxGuard - Code Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="app" class="container mx-auto px-4">
+        <!-- Navigation -->
+        <nav class="flex justify-between items-center py-4 border-b border-gray-700">
+            <div class="text-2xl font-bold">FoxGuard Code Panel</div>
+            <div>
+                <span class="mr-4">{{ username }}</span>
+                <button 
+                    @click="goToAccount" 
+                    class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 mr-4"
+                >
+                    My Account
+                </button>
+                <button 
+                    @click="logout" 
+                    class="bg-red-600 px-4 py-2 rounded hover:bg-red-700"
+                >
+                    Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Dashboard -->
+        <div class="grid grid-cols-3 gap-4 mt-6">
+            <!-- Anti-Cheat Configuration -->
+            <div class="bg-gray-800 p-4 rounded">
+                <h2 class="text-xl font-bold mb-4">Anti-Cheat Config</h2>
+                <form @submit.prevent="updateConfig">
+                    <div class="mb-4">
+                        <label class="block mb-2">Max Violation Points</label>
+                        <input 
+                            v-model.number="config.maxViolationPoints" 
+                            type="number" 
+                            class="w-full p-2 bg-gray-700 rounded"
+                        >
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-2">Violation Decay Time (hours)</label>
+                        <input 
+                            v-model.number="config.violationDecayTime" 
+                            type="number" 
+                            class="w-full p-2 bg-gray-700 rounded"
+                        >
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-2">Blacklisted Weapons</label>
+                        <textarea 
+                            v-model="config.blacklistedWeapons" 
+                            class="w-full p-2 bg-gray-700 rounded h-24"
+                            placeholder="Enter weapon hashes, one per line"
+                        ></textarea>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-600 py-2 rounded hover:bg-blue-700"
+                    >
+                        Update Configuration
+                    </button>
+                </form>
+            </div>
+
+            <!-- Real-Time Violations -->
+            <div class="bg-gray-800 p-4 rounded col-span-2">
+                <h2 class="text-xl font-bold mb-4">Real-Time Violations</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-700">
+                                <th class="p-2">Player</th>
+                                <th class="p-2">Violation Type</th>
+                                <th class="p-2">Timestamp</th>
+                                <th class="p-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr 
+                                v-for="violation in violations" 
+                                :key="violation.id" 
+                                class="border-b border-gray-700"
+                            >
+                                <td class="p-2">{{ violation.playerName }}</td>
+                                <td class="p-2">{{ violation.violationType }}</td>
+                                <td class="p-2">{{ violation.timestamp }}</td>
+                                <td class="p-2">
+                                    <button 
+                                        @click="banPlayer(violation.playerId)" 
+                                        class="bg-red-600 px-2 py-1 rounded hover:bg-red-700"
+                                    >
+                                        Ban
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Violation Analytics -->
+        <div class="mt-6 grid grid-cols-2 gap-4">
+            <div class="bg-gray-800 p-4 rounded">
+                <h2 class="text-xl font-bold mb-4">Violations by Type</h2>
+                <canvas ref="violationChart"></canvas>
+            </div>
+            <div class="bg-gray-800 p-4 rounded">
+                <h2 class="text-xl font-bold mb-4">Server Protection Rules</h2>
+                <div class="space-y-2">
+                    <div 
+                        v-for="rule in protectionRules" 
+                        :key="rule.id" 
+                        class="bg-gray-700 p-2 rounded flex justify-between items-center"
+                    >
+                        <span>{{ rule.name }}</span>
+                        <label class="switch">
+                            <input 
+                                type="checkbox" 
+                                v-model="rule.enabled"
+                                @change="toggleRule(rule)"
+                            >
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue
+
+        createApp({
+            data() {
+                return {
+                    username: 'Admin',
+                    config: {
+                        maxViolationPoints: 10,
+                        violationDecayTime: 1,
+                        blacklistedWeapons: ''
+                    },
+                    violations: [],
+                    protectionRules: [
+                        { id: 1, name: 'God Mode Detection', enabled: true },
+                        { id: 2, name: 'Speed Hack Prevention', enabled: true },
+                        { id: 3, name: 'No-Clip Detection', enabled: true },
+                        { id: 4, name: 'Weapon Spawn Check', enabled: true },
+                        { id: 5, name: 'Launcher Detection', enabled: true }
+                    ]
+                }
+            },
+            methods: {
+                updateConfig() {
+                    // Convert blacklisted weapons to array
+                    const weaponArray = this.config.blacklistedWeapons
+                        .split('\n')
+                        .map(weapon => weapon.trim())
+                        .filter(weapon => weapon !== '');
+
+                    axios.post('/api/update-config', {
+                        ...this.config,
+                        blacklistedWeapons: weaponArray
+                    })
+                    .then(response => {
+                        alert('Configuration updated successfully');
+                    })
+                    .catch(error => {
+                        alert('Failed to update configuration');
+                    });
+                },
+                fetchViolations() {
+                    axios.get('/api/violations')
+                    .then(response => {
+                        this.violations = response.data;
+                        this.renderViolationChart();
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch violations');
+                    });
+                },
+                banPlayer(playerId) {
+                    axios.post('/api/ban-player', { playerId })
+                    .then(response => {
+                        alert('Player banned successfully');
+                        // Remove the banned player from violations list
+                        this.violations = this.violations.filter(v => v.playerId !== playerId);
+                    })
+                    .catch(error => {
+                        alert('Failed to ban player');
+                    });
+                },
+                toggleRule(rule) {
+                    axios.post('/api/toggle-rule', {
+                        ruleId: rule.id,
+                        enabled: rule.enabled
+                    })
+                    .then(response => {
+                        // Rule toggled successfully
+                    })
+                    .catch(error => {
+                        // Revert the toggle if API call fails
+                        rule.enabled = !rule.enabled;
+                        alert('Failed to update rule');
+                    });
+                },
+                renderViolationChart() {
+                    // Group violations by type
+                    const violationTypes = {};
+                    this.violations.forEach(violation => {
+                        violationTypes[violation.violationType] = 
+                            (violationTypes[violation.violationType] || 0) + 1;
+                    });
+
+                    // Create chart
+                    const ctx = this.$refs.violationChart.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(violationTypes),
+                            datasets: [{
+                                data: Object.values(violationTypes),
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)',
+                                    'rgba(255, 206, 86, 0.6)',
+                                    'rgba(75, 192, 192, 0.6)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: 'Violation Types'
+                            }
+                        }
+                    });
+                },
+                logout() {
+                    // Clear token and redirect to login
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                },
+                goToAccount() {
+                    // Redirect to the My Account page
+                    window.location.href = '/account';
+                }
+            },
+            mounted() {
+                // Fetch initial data
+                this.fetchViolations();
+            }
+        }).mount('#app')
+    </script>
+
+    <style>
+        /* Custom switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4a5568;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #48bb78;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</body>
+</html>
